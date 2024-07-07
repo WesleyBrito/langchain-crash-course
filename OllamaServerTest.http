@@ -1,0 +1,9 @@
+
+POST http://host.docker.internal:11434/api/generate HTTP/1.1
+content-type: application/application/json
+
+{
+  "model": "llama3",
+  "prompt": "Why is the sky blue?",
+  "stream": false
+}

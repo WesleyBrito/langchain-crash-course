@@ -1,18 +1,16 @@
 # Chat Model Documents: https://python.langchain.com/v0.2/docs/integrations/chat/
-# OpenAI Chat Model Documents: https://python.langchain.com/v0.2/docs/integrations/chat/openai/
+# Ollama Chat Model Documents: https://python.langchain.com/v0.2/docs/integrations/chat/ollama/
 
 from dotenv import load_dotenv
-from langchain_openai import ChatOpenAI
+from langchain_community.llms import Ollama
 
 # Load environment variables from .env
 load_dotenv()
 
-# Create a ChatOpenAI model
-model = ChatOpenAI(model="gpt-4o")
+# Create a Ollama model
+model = Ollama(base_url="http://host.docker.internal:11434", model="llama3")
 
 # Invoke the model with a message
-result = model.invoke("What is 81 divided by 9?")
-print("Full result:")
+result = model.invoke("Quanto é 81 dividido por 9?")
+print("Resultado:")
 print(result)
-print("Content only:")
-print(result.content)

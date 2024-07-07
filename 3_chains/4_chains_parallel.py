@@ -1,20 +1,17 @@
-from dotenv import load_dotenv
+
 from langchain.prompts import ChatPromptTemplate
 from langchain.schema.output_parser import StrOutputParser
 from langchain.schema.runnable import RunnableParallel, RunnableLambda
-from langchain_openai import ChatOpenAI
+from langchain_community.llms import Ollama
 
-# Load environment variables from .env
-load_dotenv()
-
-# Create a ChatOpenAI model
-model = ChatOpenAI(model="gpt-4o")
+# Create a Ollama model
+model = Ollama(base_url="http://host.docker.internal:11434", model="llama3")
 
 # Define prompt template
 prompt_template = ChatPromptTemplate.from_messages(
     [
-        ("system", "You are an expert product reviewer."),
-        ("human", "List the main features of the product {product_name}."),
+        ("system", "Você é brasileiro, revisor especialista em produtos."),
+        ("human", "Liste as principais características do produto {nomeProduto}."),
     ]
 )
 
@@ -23,10 +20,10 @@ prompt_template = ChatPromptTemplate.from_messages(
 def analyze_pros(features):
     pros_template = ChatPromptTemplate.from_messages(
         [
-            ("system", "You are an expert product reviewer."),
+            ("system", "Você é brasileiro, revisor especialista em produtos."),
             (
                 "human",
-                "Given these features: {features}, list the pros of these features.",
+                "Dadas essas características: {features}, liste os prós e/ou beneficios desses recursos.",
             ),
         ]
     )
@@ -37,10 +34,10 @@ def analyze_pros(features):
 def analyze_cons(features):
     cons_template = ChatPromptTemplate.from_messages(
         [
-            ("system", "You are an expert product reviewer."),
+            ("system", "Você é brasileiro, revisor especialista em produtos."),
             (
                 "human",
-                "Given these features: {features}, list the cons of these features.",
+                "Dadas essas características: {features}, liste os contras desses recursos.",
             ),
         ]
     )
@@ -66,12 +63,12 @@ chain = (
     prompt_template
     | model
     | StrOutputParser()
-    | RunnableParallel(branches={"pros": pros_branch_chain, "cons": cons_branch_chain})
+    | RunnableParallel(branches={"Pros": pros_branch_chain, "Contras": cons_branch_chain})
     | RunnableLambda(lambda x: combine_pros_cons(x["branches"]["pros"], x["branches"]["cons"]))
 )
 
 # Run the chain
-result = chain.invoke({"product_name": "MacBook Pro"})
+result = chain.invoke({"nomeProduto": "MacBook Pro"})
 
 # Output
 print(result)

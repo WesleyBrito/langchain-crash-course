@@ -1,48 +1,45 @@
-from dotenv import load_dotenv
+
 from langchain.prompts import ChatPromptTemplate
 from langchain.schema.output_parser import StrOutputParser
 from langchain.schema.runnable import RunnableBranch
-from langchain_openai import ChatOpenAI
+from langchain_community.llms import Ollama
 
-# Load environment variables from .env
-load_dotenv()
-
-# Create a ChatOpenAI model
-model = ChatOpenAI(model="gpt-4o")
+# Create a Ollama model
+model = Ollama(base_url="http://host.docker.internal:11434", model="llama3")
 
 # Define prompt templates for different feedback types
 positive_feedback_template = ChatPromptTemplate.from_messages(
     [
-        ("system", "You are a helpful assistant."),
+        ("system", "você é um assistente útil brasileiro."),
         ("human",
-         "Generate a thank you note for this positive feedback: {feedback}."),
+         "Gere uma nota em pt-br de agradecimento por este feedback positivo: {feedback}."),
     ]
 )
 
 negative_feedback_template = ChatPromptTemplate.from_messages(
     [
-        ("system", "You are a helpful assistant."),
+        ("system", "você é um assistente útil brasileiro."),
         ("human",
-         "Generate a response addressing this negative feedback: {feedback}."),
+         "Gere uma nota em pt-br de agradecimento por este feedback negativo: {feedback}."),
     ]
 )
 
 neutral_feedback_template = ChatPromptTemplate.from_messages(
     [
-        ("system", "You are a helpful assistant."),
+        ("system", "você é um assistente útil brasileiro."),
         (
             "human",
-            "Generate a request for more details for this neutral feedback: {feedback}.",
+            "Gere uma nota em pt-br de agradecimento por este feedback neutro: {feedback}.",
         ),
     ]
 )
 
 escalate_feedback_template = ChatPromptTemplate.from_messages(
     [
-        ("system", "You are a helpful assistant."),
+        ("system", "você é um assistente útil brasileiro."),
         (
             "human",
-            "Generate a message to escalate this feedback to a human agent: {feedback}.",
+            "Gere uma mensagem em pt-br para encaminhar esse feedback para um agente humano: {feedback}.",
         ),
     ]
 )
@@ -50,9 +47,9 @@ escalate_feedback_template = ChatPromptTemplate.from_messages(
 # Define the feedback classification template
 classification_template = ChatPromptTemplate.from_messages(
     [
-        ("system", "You are a helpful assistant."),
+        ("system", "você é um assistente útil brasileiro."),
         ("human",
-         "Classify the sentiment of this feedback as positive, negative, neutral, or escalate: {feedback}."),
+         "Classifique o sentimento desse feedback como positivo, negativo, neutro ou crescente: {feedback}."),
     ]
 )
 
@@ -80,12 +77,12 @@ classification_chain = classification_template | model | StrOutputParser()
 chain = classification_chain | branches
 
 # Run the chain with an example review
-# Good review - "The product is excellent. I really enjoyed using it and found it very helpful."
-# Bad review - "The product is terrible. It broke after just one use and the quality is very poor."
-# Neutral review - "The product is okay. It works as expected but nothing exceptional."
-# Default - "I'm not sure about the product yet. Can you tell me more about its features and benefits?"
+# Crítica boa - "O produto é excelente. Gostei muito de usá-lo e achei muito útil."
+# Crítica ruim - "O produto é péssimo. Ele quebrou após apenas um uso e a qualidade é muito ruim."
+# Avaliação neutra - "O produto está bom. Funciona conforme o esperado, mas nada de excepcional."
+# Padrão - "Ainda não tenho certeza sobre o produto. Você pode me contar mais sobre seus recursos e benefícios?"
 
-review = "The product is terrible. It broke after just one use and the quality is very poor."
+review = "O produto é terrível. Quebrou com apenas um uso e a qualidade é muito ruim."
 result = chain.invoke({"feedback": review})
 
 # Output the result
